@@ -62,18 +62,19 @@
                         </button>
 
                         <button
+                            id="profileBtn"
+                            class="btn my-2 my-sm-0 "
+                            type="submit"
+                        >
+                            <img id="nav-profile-img" class="rounded-circle w-h-50"  src="assets/1-p-pic.jpg" alt="">
+                            <b id="nav-username">@profile</b>
+                        </button>
+                        <button
                             id="lognOutBtn"
                             class="btn btn-outline-danger my-2 my-sm-0 "
                             type="submit"
                         >
                             Logout
-                        </button>
-                        <button
-                            id="profileBtn"
-                            class="btn btn-outline-danger my-2 my-sm-0 "
-                            type="submit"
-                        >
-                            profile
                         </button>
                         <button
                             id="createPostBtn"
@@ -107,7 +108,7 @@
                             <form>
                                 <div class="mb-3">
                                     <label for="recipient-name" class="col-form-label">Username:</label>
-                                    <input value="yarob01" type="text" class="form-control" id="userNameInput">
+                                    <input value="Seif_Aldin_O" type="text" class="form-control" id="userNameInput">
                                 </div>
                                 <div class="mb-3">
                                     <label for="message-text" class="col-form-label">Password:</label>
@@ -123,7 +124,9 @@
             </div>
         </div>
         <!-- //LOGIN MODAL //-->
-        <!-- LOGOUT MODAL -->
+
+
+        <!-- register MODAL -->
 
         <div class="modal fade" id="registerModal" tabindex="-1" data-bs-backdrop="static" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -134,6 +137,10 @@
                     </div>
                         <div class="modal-body">
                             <form>
+                                <div class="mb-3">
+                                    <label for="recipient-name" class="col-form-label">profile image:</label>
+                                    <input type="file" class="form-control" id="registerImageInput">
+                                </div>
                                 <div class="mb-3">
                                     <label for="recipient-name" class="col-form-label">Name:</label>
                                     <input value="yarob01" type="text" class="form-control" id="registerNameInput">
@@ -157,7 +164,7 @@
         </div>
 
 
-        <!-- //LOGOUT MODAL //-->
+        <!-- //register MODAL //-->
 
 
         

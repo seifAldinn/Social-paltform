@@ -1,9 +1,27 @@
 // onload = () => {    ui(localStorage.getItem("token"))  }
 // console.log(ui(localStorage.getItem("token")))
+let currentpage = 1
+let lastpage = 1
+let isLoading = false
+
 ui() //working
 FitchPosts()
 
+window.addEventListener('scroll', () => {
+    // Total height of the document
+    const totalHeight = document.documentElement.scrollHeight;
+    // Current scroll position from top + viewport height
+    const scrolledTo = window.scrollY + window.innerHeight;
 
+    // 99.9% threshold value
+    const threshold = 0.8;
+
+    if (scrolledTo >= totalHeight * threshold && currentpage < lastpage && !isLoading) {
+        console.log("Reached last 10% of the page");
+        currentpage += 1
+        FitchPosts(false, currentpage) // Load more posts without resetting
+    }
+});
 
 
 
@@ -16,12 +34,17 @@ FitchPosts()
 
 // console.log(card)
 
-async function FitchPosts() {
+async function FitchPosts(reset = true , page = 1) {
 let container = document.getElementById("container")
-container.innerHTML = ""
+if(reset) {
+    container.innerHTML = ""
+}
 
-    const response = await fetch('https://tarmeezacademy.com/api/v1/posts?limit=30')
+    isLoading = true
+    const response = await fetch(`https://tarmeezacademy.com/api/v1/posts?limit=3&page=${page}`)
     const json = await response.json()
+    isLoading = false
+    lastpage = json.meta?.last_page ?? 1
     const posts = json.data
     // console.log(posts)
         for(post of posts){
@@ -75,15 +98,7 @@ container.innerHTML = ""
 }
 
 
-// let userNameInput = document.getElementById("userNameInput")
-// let passInput = document.getElementById("passInput")
-let login = document.getElementById("login")
 
-
-
-
-
-// login.addEventListener("click", loginAndRestoreToken())
 
 function modalHide(modelId){
     const myModalEl = document.getElementById(modelId);
@@ -93,6 +108,7 @@ function modalHide(modelId){
 
 
 // ------------------login------------//
+let login = document.getElementById("login")
 login.onclick = function loginAndRestoreToken() {
 
     let userNameInput = document.getElementById("userNameInput")
@@ -105,7 +121,7 @@ login.onclick = function loginAndRestoreToken() {
     .then(response => {
         const token = response.data.token
         localStorage.setItem("token", token)
-        localStorage.setItem("userName", response.data.user.username)
+        localStorage.setItem("userName", JSON.stringify(response.data.user))
 
         appendAlert(response.data.message ?? 'Login successful!', 'success')
         modalHide("loginModal")
@@ -129,16 +145,27 @@ registerSend.onclick = function registerAndStoreToken() {
     let registerNameInput = document.getElementById("registerNameInput")
     let registerUserNameInput = document.getElementById("registerUserNameInput")
     let registerPassInput = document.getElementById("registerPassInput")
+    let registerImageInput = document.getElementById("registerImageInput")
 
-    axios.post('https://tarmeezacademy.com/api/v1/register', {
-        username: registerUserNameInput.value,
-        password: registerPassInput.value,
-        name: registerNameInput.value,
+    let formInput = new FormData()
+    formInput.append("name", registerNameInput.value)
+    formInput.append("username", registerUserNameInput.value)
+    formInput.append("password", registerPassInput.value)
+    formInput.append("image", registerImageInput.files[0])
+
+    headers = {
+        'Content-Type': 'multipart/form-data',
+    }
+    
+
+    axios.post('https://tarmeezacademy.com/api/v1/register', formInput , {
+        headers: headers
     })
     .then(response => {
         const token = response.data.token
         localStorage.setItem("token", token)
-        localStorage.setItem("userName", response.data.user.username)
+        localStorage.setItem("userName", JSON.stringify(response.data.user))
+        console.log(response.data)
 
         appendAlert(response.data.message ?? `Your account created successfully! ${registerNameInput.value}`, 'success')
         modalHide("registerModal")
@@ -162,6 +189,8 @@ postSend.onclick = function createPost() {
     let postTitleInput = document.getElementById("postTitleInput")
     let postBodyInput = document.getElementById("postBodyInput")
     let postImageInput = document.getElementById("postImageInput")
+
+
     let formInput = new FormData()
     formInput.append("title", postTitleInput.value)
     formInput.append("body", postBodyInput.value)
@@ -220,6 +249,16 @@ function ui() {
     let profileBtn = document.getElementById("profileBtn")
     let loginBtn = document.getElementById("loginBtn")
     let createPostBtn = document.getElementById("createPostBtn")
+    let navUsername = document.getElementById("nav-username")
+    let navProfileImg = document.getElementById("nav-profile-img")
+
+    let userdata = localStorage.getItem("userName")
+const obj = JSON.parse(userdata);
+    console.log(obj)
+
+    
+    // let jsonUserdata = JSON.parse(userdata)
+// console.log(jsonUserdata)
 
     if(token == null){
         loginBtn.style.display = "block"
@@ -235,12 +274,12 @@ function ui() {
         lognOutBtn.style.display = "block"
         profileBtn.style.display = "block"
         createPostBtn.style.display = "block"
+
+        navUsername.innerHTML = `@${obj.username}`
+        navProfileImg.src = obj.profile_image
+
     }
 }
-
-
-// console.log(localStorage.getItem("token") === null)
-
 
 
 
